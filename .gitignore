@@ -1,0 +1,59 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+env/
+.Python
+
+# Env + secrets
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+credentials*.json
+secrets*.yaml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# Logs, artefacts, data (public repos should not carry these)
+*.log
+logs/
+*.db
+*.sqlite
+*.sqlite3
+*.pkl
+*.joblib
+*.h5
+*.parquet
+
+# Trading artefacts
+trades_*.csv
+ml_adaptive_trades_*.csv
+ml_model_*.pkl
+backtest_results/
+grid_search_results/
+paper_trading_results/
+data/
+cache/
+runtime/
+
+# One_Shot-specific artefacts (runtime outputs, not source)
+minute_data/
+ml_adaptive_summary_*.json
+hft_summary_*.json
+hft_trades_*.csv
+hft_backtest.log
+ml_adaptive_trader.log

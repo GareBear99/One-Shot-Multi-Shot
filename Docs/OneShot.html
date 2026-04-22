@@ -1,0 +1,349 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>One Shot / Multi Shot — Operator Guide (Layman + Math)</title>
+<style>
+:root {
+    --bg:#0a0a10; --card:#121225; --card2:#0f1020; --text:#eef; --muted:#b7b7d6;
+    --accent:#7c4dff; --good:#2ee59d; --warn:#ffcc66; --bad:#ff4d6d; --line:#2a2a55;
+  }
+  *{box-sizing:border-box}
+  body{margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial; background: radial-gradient(1000px 600px at 20% 0%, #1a1038, var(--bg)); color:var(--text);}
+  .wrap{max-width:1050px; margin:0 auto; padding:22px;}
+  .top{display:flex; gap:14px; align-items:stretch; flex-wrap:wrap;}
+  .brand{flex:1; min-width:280px; background:linear-gradient(135deg, #1b1142, #0b0b14); border:1px solid var(--line); border-radius:18px; padding:18px;}
+  .brand h1{margin:0 0 6px 0; font-size:24px; letter-spacing:.2px}
+  .pill{display:inline-flex; gap:8px; align-items:center; padding:8px 10px; border-radius:999px; border:1px solid var(--line); background:rgba(255,255,255,.03); color:var(--muted); font-size:12px}
+  .grid{display:grid; grid-template-columns: 1.15fr .85fr; gap:14px; margin-top:14px;}
+  @media (max-width: 900px){ .grid{grid-template-columns:1fr} }
+  .card{background:linear-gradient(180deg, var(--card), var(--card2)); border:1px solid var(--line); border-radius:18px; padding:16px; box-shadow: 0 12px 40px rgba(0,0,0,.35);}
+  .card h2{margin:0 0 10px 0; font-size:16px; color:#fff}
+  .muted{color:var(--muted)}
+  .row{display:flex; gap:12px; flex-wrap:wrap; align-items:center}
+  .btn{cursor:pointer; border:1px solid var(--line); border-radius:14px; padding:12px 14px; background:rgba(255,255,255,.03); color:var(--text); font-weight:650}
+  .btn.primary{border-color: rgba(124,77,255,.55); background: rgba(124,77,255,.18)}
+  .btn.good{border-color: rgba(46,229,157,.55); background: rgba(46,229,157,.12)}
+  .btn.bad{border-color: rgba(255,77,109,.55); background: rgba(255,77,109,.10)}
+  .btn.small{padding:8px 10px; font-size:12px; border-radius:12px}
+  .split{display:grid; grid-template-columns: 1fr 1fr; gap:10px}
+  @media (max-width: 520px){ .split{grid-template-columns:1fr} }
+  .bigSignal{display:flex; align-items:center; justify-content:space-between; gap:14px; padding:14px; border-radius:16px; border:1px solid var(--line); background:rgba(0,0,0,.18)}
+  .dir{font-size:30px; font-weight:900; letter-spacing:.5px}
+  .dir.up{color:var(--good)} .dir.down{color:var(--bad)}
+  .sub{font-size:12px; color:var(--muted)}
+  .meter{height:12px; border-radius:999px; border:1px solid var(--line); background:rgba(255,255,255,.04); overflow:hidden}
+  .meter > div{height:100%; width:50%; background:linear-gradient(90deg, rgba(124,77,255,.4), rgba(124,77,255,.95));}
+  .kv{display:grid; grid-template-columns: 1fr auto; gap:10px; padding:10px 0; border-bottom:1px solid rgba(42,42,85,.6)}
+  .kv:last-child{border-bottom:none}
+  .tag{font-size:12px; padding:6px 8px; border-radius:999px; border:1px solid var(--line); color:var(--muted); background:rgba(255,255,255,.03)}
+  input[type="range"]{width:100%}
+  .table{width:100%; border-collapse:separate; border-spacing:0; overflow:hidden; border-radius:14px; border:1px solid var(--line)}
+  .table th,.table td{padding:10px 10px; text-align:left; font-size:13px; border-bottom:1px solid rgba(42,42,85,.6)}
+  .table th{color:#fff; background:rgba(255,255,255,.04)}
+  .table tr:last-child td{border-bottom:none}
+  .right{text-align:right}
+  .callout{border:1px dashed rgba(124,77,255,.55); border-radius:16px; padding:12px; color:var(--muted); background:rgba(124,77,255,.08)}
+  .foot{margin-top:14px; font-size:12px; color:var(--muted); line-height:1.45}
+  code{background:rgba(255,255,255,.06); padding:2px 6px; border-radius:8px}
+
+/* --- added for consolidated doc --- */
+.hero {
+  display:flex; gap:14px; align-items:stretch; justify-content:space-between; margin-bottom:14px;
+}
+@media (max-width: 980px) { .hero { flex-direction:column; } .split { grid-template-columns:1fr; } .grid { grid-template-columns:1fr; } }
+.badge {
+  min-width:260px;
+  background:rgba(255,255,255,.04);
+  border:1px solid var(--line);
+  border-radius:22px;
+  padding:18px;
+}
+.nav {
+  display:flex; gap:10px; flex-wrap:wrap; margin-top:10px;
+}
+.nav a {
+  text-decoration:none;
+  border:1px solid var(--line);
+  padding:8px 10px;
+  border-radius:999px;
+  color:var(--text);
+  background:rgba(255,255,255,.03);
+  font-weight:600;
+}
+.nav a:hover { border-color:rgba(178,123,255,.45); }
+.h3 { margin:0 0 8px 0; font-size:18px; }
+.kpi {
+  display:grid; grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:12px; margin-top:12px;
+}
+@media (max-width: 980px) { .kpi { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+.code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  background: rgba(0,0,0,.28);
+  border: 1px solid var(--line);
+  padding: 12px;
+  border-radius: 14px;
+  overflow:auto;
+  line-height:1.45;
+}
+hr.sep { border:none; height:1px; background:var(--line); margin:16px 0; }
+.smallnote { font-size:12px; color:var(--muted); }
+.callout {
+  background:rgba(255,255,255,.04);
+  border:1px solid var(--line);
+  border-radius:18px;
+  padding:12px;
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero">
+    <div class="card" style="flex:1">
+      <div class="pill">📡 Live signal • 🧠 confidence • 📊 scoring</div>
+      <h1 style="margin:10px 0 6px 0">One Shot / Multi Shot — Operator Guide (Layman + Math)</h1>
+      <div class="sub">One‑click direction trades • Confidence meter • Rolling win‑rate scoring • Bankroll‑first math</div>
+      <div class="nav">
+        <a href="#what">What it is</a>
+        <a href="#ui">UI walkthrough</a>
+        <a href="#math">The math</a>
+        <a href="#rules">Safety rules</a>
+        <a href="#modes">OneShot vs MultiShot</a>
+        <a href="#faq">FAQ</a>
+      </div>
+    </div>
+    <div class="badge">
+      <div class="sub">Default demo payout</div>
+      <div style="font-size:34px; font-weight:900; letter-spacing:.5px; margin-top:6px">+80%</div>
+      <div class="sub">profit on correct</div>
+      <div class="foot">Real payout depends on broker/exchange.</div>
+    </div>
+  </div>
+
+  <div class="kpi">
+    <div class="card">
+      <div class="sub">Signal refresh</div>
+      <div style="font-size:28px;font-weight:900">5s</div>
+      <div class="foot">Direction locks every 5 seconds.</div>
+    </div>
+    <div class="card">
+      <div class="sub">Confidence refresh</div>
+      <div style="font-size:28px;font-weight:900">1s</div>
+      <div class="foot">Meter updates every second.</div>
+    </div>
+    <div class="card">
+      <div class="sub">Stake slider</div>
+      <div style="font-size:28px;font-weight:900">$0–$100</div>
+      <div class="foot">Hard cap keeps risk bounded.</div>
+    </div>
+    <div class="card">
+      <div class="sub">Score windows</div>
+      <div style="font-size:28px;font-weight:900">1m→12h</div>
+      <div class="foot">Win‑rate buckets for reality checks.</div>
+    </div>
+  </div>
+
+  <div id="what" class="card" style="margin-top:14px">
+    <h2>What One Shot is (plain English)</h2>
+    <div class="split">
+      <div class="callout">
+        <b>One Shot</b> is a live <b>UP/DOWN</b> direction signal that updates every <b>5 seconds</b>.  
+        You can place a small, fixed‑expiry trade in either direction (with or against the signal).
+        After expiry, your result is graded and the system’s rolling win‑rates update.
+      </div>
+      <div class="callout">
+        <b>Important:</b> One Shot is a <b>signal + scoreboard</b>.  
+        It is not a guaranteed money machine. The “edge” comes from being selective:
+        only trade when confidence is stable and the win‑rate windows are healthy.
+      </div>
+    </div>
+
+    <hr class="sep"/>
+
+    <h3 class="h3">What “locked” vs “live confidence” means</h3>
+    <ul>
+      <li><b>Locked direction (every 5s):</b> this is the actual prediction that gets scored later.</li>
+      <li><b>Live confidence (every 1s):</b> a “temperature gauge” that can rise/fall without rewriting the locked direction.</li>
+      <li><b>Stability (HIGH/MED/LOW):</b> how much the confidence meter is wobbling.</li>
+    </ul>
+  </div>
+
+  <div id="ui" class="grid" style="margin-top:14px">
+    <div class="card">
+      <h2>UI walkthrough (what the user sees)</h2>
+      <div class="foot">This uses the same One Shot theme and widgets as the demo UI.</div>
+      <div class="bigSignal" style="margin-top:10px">
+        <div>
+          <div class="dir up">UP</div>
+          <div class="sub">Locked every 5s • Live confidence updates every 1s</div>
+        </div>
+        <div style="min-width:220px">
+          <div class="sub">Live confidence</div>
+          <div class="meter"><div style="width:72%; background:linear-gradient(90deg, var(--acc), var(--acc2)); height:100%; border-radius:999px"></div></div>
+          <div style="display:flex; justify-content:space-between; gap:10px; margin-top:6px">
+            <span class="tag">72%</span>
+            <span class="tag">Stability: MED</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:12px" class="split">
+        <div class="callout">
+          <div class="sub">Rolling Win Rate (how often the signal was correct)</div>
+          <table class="table" style="margin-top:10px">
+            <thead><tr><th>Window</th><th class="right">Win Rate</th><th class="right">n</th></tr></thead>
+            <tbody>
+              <tr><td>Last 1 minute</td><td class="right">78%</td><td class="right">12</td></tr>
+              <tr><td>Last 5 minutes</td><td class="right">81%</td><td class="right">60</td></tr>
+              <tr><td>Last 1 hour</td><td class="right">73%</td><td class="right">720</td></tr>
+              <tr><td>Last 4 hours</td><td class="right">69%</td><td class="right">2880</td></tr>
+              <tr><td>Last 12 hours</td><td class="right">66%</td><td class="right">8640</td></tr>
+            </tbody>
+          </table>
+          <div class="foot">Tip: A “good” moment is when short‑term and long‑term windows are both strong.</div>
+        </div>
+        <div class="callout">
+          <div class="sub">Stake + payout preview (simple)</div>
+          <div style="display:flex; justify-content:space-between; gap:10px; margin-top:10px"><span class="sub">Stake</span><b>$10.00</b></div>
+          <div style="display:flex; justify-content:space-between; gap:10px; margin-top:10px"><span class="sub">If correct (+80%)</span><b>$18.00</b></div>
+          <div class="foot">Profit = $8.00 • Wrong = -$10.00</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Quick Start (3 steps)</h2>
+      <div class="split">
+        <div class="callout">
+          <b>Step 1:</b> Watch the signal for 30–60 seconds.<br/>
+          Trade only if confidence is <b>stable</b> and win‑rates look healthy.
+        </div>
+        <div class="callout">
+          <b>Step 2:</b> Choose <b>UP</b> or <b>DOWN</b>, set stake (0–100), pick expiry (30s/60s/5m/15m).
+        </div>
+      </div>
+      <div class="callout" style="margin-top:10px">
+        <b>Step 3:</b> Place the trade. After expiry, it’s graded and the scoreboards update.
+      </div>
+
+      <hr class="sep"/>
+
+      <h3 class="h3">Trade selection gates</h3>
+      <ul>
+        <li><b>Stability gate:</b> avoid LOW stability (confidence jumping around).</li>
+        <li><b>Score gate:</b> require minimum win‑rate in BOTH short windows (1m/5m) and longer windows (1h/4h/12h).</li>
+        <li><b>Cooldown gate:</b> after a loss streak, pause and wait for the meter to “re-stabilize”.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div id="math" class="card" style="margin-top:14px">
+    <h2>The math (bankroll-first)</h2>
+    <div class="split">
+      <div>
+        <h3 class="h3">Per-trade outcomes</h3>
+        <div class="code">
+Profit if correct = stake × payoutRate<br/>
+Loss if wrong = -stake<br/><br/>
+Example (stake = $10, payoutRate = 0.80):<br/>
+Correct → +$8 profit (receive $18 total)<br/>
+Wrong → -$10
+        </div>
+
+        <h3 class="h3" style="margin-top:12px">Expected Value (EV) per trade</h3>
+        <div class="code">
+EV = W × (S×0.8)  −  (1−W) × S<br/><br/>
+W = win rate (0.72 means 72%)<br/>
+S = stake<br/>
+0.8 = payout rate (80% profit)
+        </div>
+      </div>
+
+      <div>
+        <h3 class="h3">Break-even win rate</h3>
+        <div class="code">
+W = 1/1.8 ≈ 55.56% (for 80% payout)
+        </div>
+
+        <h3 class="h3" style="margin-top:12px">Example monthly math (matches your “cap at $10” rule)</h3>
+        <div class="code">
+Assume:<br/>
+Bankroll = $50<br/>
+Typical stake = $5 (cap $10)<br/>
+Trades/day = 10<br/>
+Days/month = 22<br/>
+Win rate = 72%<br/><br/>
+EV/trade = 0.72×(5×0.8) − 0.28×5<br/>
+        = 2.88 − 1.40<br/>
+        = $1.48 per trade<br/><br/>
+Daily EV ≈ 10 × 1.48 = $14.80<br/>
+Monthly EV ≈ 22 × 14.80 = $325.60
+        </div>
+        <div class="smallnote">EV is not guaranteed profit. Streaks + execution limits still exist.</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="rules" class="card" style="margin-top:14px">
+    <h2>Safety rules</h2>
+    <div class="split">
+      <div class="callout">
+        <b>Hard limits</b><br/>
+        • Stake cap: <b>$10</b><br/>
+        • Max trades/day default: <b>10</b><br/>
+        • Stop after: <b>2–3 consecutive losses</b> or <b>-20% bankroll</b><br/>
+        • Only trade when stability is <b>HIGH/MED</b>
+      </div>
+      <div class="callout">
+        <b>Soft limits</b><br/>
+        • If win‑rate windows drop → pause<br/>
+        • If confidence flips rapidly → pause<br/>
+        • If spread/fees spike → pause<br/>
+        • If market becomes news‑driven → pause
+      </div>
+    </div>
+    <div class="foot"><b>Reality check:</b> no system “guarantees” 90% wins. The goal is selectivity + strict loss controls.</div>
+  </div>
+
+  <div id="modes" class="card" style="margin-top:14px">
+    <h2>One Shot vs Multi Shot (subscription tier)</h2>
+    <div class="split">
+      <div class="callout">
+        <b>One Shot (free)</b><br/>
+        • Single signal stream<br/>
+        • Confidence + rolling win‑rates<br/>
+        • Manual placement (paper first)
+      </div>
+      <div class="callout">
+        <b>Multi Shot (paid)</b><br/>
+        • Multiple models → “vote” + better stability<br/>
+        • Per‑expiry optimization<br/>
+        • More analytics + filters
+      </div>
+    </div>
+  </div>
+
+  <div id="faq" class="card" style="margin-top:14px">
+    <h2>FAQ</h2>
+    <p><b>Q: Can One Shot learn and adapt when accuracy drops?</b><br/>
+    A: Yes, but updates must be controlled (enough samples, validation window, no chasing every loss).</p>
+
+    <p><b>Q: Can this trade real funds?</b><br/>
+    A: Later. Start with paper trading, log everything, then integrate execution on a compliant venue.</p>
+
+    <p><b>Q: Best default setup for a $50 bankroll?</b><br/>
+    A: Typical stake $5, cap $10, ≤10 trades/day, stop on a short loss streak.</p>
+
+    <div class="foot">
+      <b>Disclaimers:</b> Product design + UI demo only. Not financial advice. No guarantees.
+    </div>
+  </div>
+
+  <div class="foot" style="margin-top:14px">
+    Built in the One Shot neon theme for the trading-bot archive family.
+  </div>
+</div>
+</body>
+</html>

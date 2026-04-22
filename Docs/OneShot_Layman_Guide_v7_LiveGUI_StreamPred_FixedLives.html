@@ -1,0 +1,1506 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>One Shot — Simple Guide (Layman)</title>
+<style>
+  :root {
+    --bg:#0a0a10; --card:#121225; --card2:#0f1020; --text:#eef; --muted:#b7b7d6;
+    --accent:#7c4dff; --good:#2ee59d; --warn:#ffcc66; --bad:#ff4d6d; --line:#2a2a55;
+  }
+  *{box-sizing:border-box}
+  body{margin:0; font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial; background: radial-gradient(1000px 600px at 20% 0%, #1a1038, var(--bg)); color:var(--text);}
+  .wrap{max-width:1050px; margin:0 auto; padding:22px;}
+  .top{display:flex; gap:14px; align-items:stretch; flex-wrap:wrap;}
+  .brand{flex:1; min-width:280px; background:linear-gradient(135deg, #1b1142, #0b0b14); border:1px solid var(--line); border-radius:18px; padding:18px;}
+  .brand h1{margin:0 0 6px 0; font-size:24px; letter-spacing:.2px}
+  .pill{display:inline-flex; gap:8px; align-items:center; padding:8px 10px; border-radius:999px; border:1px solid var(--line); background:rgba(255,255,255,.03); color:var(--muted); font-size:12px}
+  .grid{display:grid; grid-template-columns: 1.15fr .85fr; gap:14px; margin-top:14px;}
+  @media (max-width: 900px){ .grid{grid-template-columns:1fr} }
+  .card{background:linear-gradient(180deg, var(--card), var(--card2)); border:1px solid var(--line); border-radius:18px; padding:16px; box-shadow: 0 12px 40px rgba(0,0,0,.35);}
+  .card h2{margin:0 0 10px 0; font-size:16px; color:#fff}
+  .muted{color:var(--muted)}
+  .row{display:flex; gap:12px; flex-wrap:wrap; align-items:center}
+  .btn{cursor:pointer; border:1px solid var(--line); border-radius:14px; padding:12px 14px; background:rgba(255,255,255,.03); color:var(--text); font-weight:650}
+  .btn.primary{border-color: rgba(124,77,255,.55); background: rgba(124,77,255,.18)}
+  .btn.good{border-color: rgba(46,229,157,.55); background: rgba(46,229,157,.12)}
+  .btn.bad{border-color: rgba(255,77,109,.55); background: rgba(255,77,109,.10)}
+  .btn.small{padding:8px 10px; font-size:12px; border-radius:12px}
+  .split{display:grid; grid-template-columns: 1fr 1fr; gap:10px}
+  @media (max-width: 520px){ .split{grid-template-columns:1fr} }
+  .bigSignal{display:flex; align-items:center; justify-content:space-between; gap:14px; padding:14px; border-radius:16px; border:1px solid var(--line); background:rgba(0,0,0,.18)}
+  .dir{font-size:30px; font-weight:900; letter-spacing:.5px}
+  .dir.up{color:var(--good)} .dir.down{color:var(--bad)}
+  .sub{font-size:12px; color:var(--muted)}
+  .meter{height:12px; border-radius:999px; border:1px solid var(--line); background:rgba(255,255,255,.04); overflow:hidden}
+  .meter > div{height:100%; width:50%; background:linear-gradient(90deg, rgba(124,77,255,.4), rgba(124,77,255,.95));}
+  .kv{display:grid; grid-template-columns: 1fr auto; gap:10px; padding:10px 0; border-bottom:1px solid rgba(42,42,85,.6)}
+  .kv:last-child{border-bottom:none}
+  .tag{font-size:12px; padding:6px 8px; border-radius:999px; border:1px solid var(--line); color:var(--muted); background:rgba(255,255,255,.03)}
+  input[type="range"]{width:100%}
+  .table{width:100%; border-collapse:separate; border-spacing:0; overflow:hidden; border-radius:14px; border:1px solid var(--line)}
+  .table th,.table td{padding:10px 10px; text-align:left; font-size:13px; border-bottom:1px solid rgba(42,42,85,.6)}
+  .table th{color:#fff; background:rgba(255,255,255,.04)}
+  .table tr:last-child td{border-bottom:none}
+  .right{text-align:right}
+  .callout{border:1px dashed rgba(124,77,255,.55); border-radius:16px; padding:12px; color:var(--muted); background:rgba(124,77,255,.08)}
+  .foot{margin-top:14px; font-size:12px; color:var(--muted); line-height:1.45}
+  code{background:rgba(255,255,255,.06); padding:2px 6px; border-radius:8px}
+
+/* --- OneShot v7 Interactive GUI additions --- */
+.gui-grid{display:grid;grid-template-columns:1.1fr .9fr;gap:14px}
+@media (max-width: 980px){.gui-grid{grid-template-columns:1fr}}
+.kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px}
+@media (max-width: 780px){.kpi{grid-template-columns:1fr}}
+.kpi .box{padding:12px;border-radius:16px;border:1px solid var(--line);background:rgba(255,255,255,.03)}
+.badge{display:inline-flex;align-items:center;gap:8px;padding:8px 10px;border-radius:999px;border:1px solid var(--line);background:rgba(0,0,0,.18)}
+.badge .dot{width:10px;height:10px;border-radius:999px;background:rgba(165,95,255,.9);box-shadow:0 0 18px rgba(165,95,255,.65)}
+.badge.off .dot{background:rgba(255,255,255,.25);box-shadow:none}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.small{font-size:12px;opacity:.8}
+hr.soft{border:0;border-top:1px solid var(--line);opacity:.6;margin:12px 0}
+input[type="number"], input[type="text"]{background:rgba(0,0,0,.18);border:1px solid var(--line);color:inherit;border-radius:12px;padding:8px 10px}
+select{background:rgba(0,0,0,.18);border:1px solid var(--line);color:inherit;border-radius:12px;padding:8px 10px}
+.btn2{cursor:pointer;border:1px solid var(--line);border-radius:14px;padding:10px 12px;background:rgba(165,95,255,.12);color:inherit;font-weight:700}
+.btn2:hover{background:rgba(165,95,255,.18)}
+.btn3{cursor:pointer;border:1px solid var(--line);border-radius:14px;padding:10px 12px;background:rgba(0,0,0,.18);color:inherit;font-weight:700}
+.btn3:hover{background:rgba(255,255,255,.06)}
+.hearts{display:flex;gap:6px;align-items:center}
+.heart{width:20px;height:20px;display:inline-block}
+.heart svg{width:20px;height:20px}
+.heart.off{opacity:.25}
+.gauge{position:relative;height:120px;border-radius:18px;border:1px solid var(--line);background:rgba(0,0,0,.18);overflow:hidden}
+.gauge .fill{position:absolute;left:0;top:0;bottom:0;width:50%;background:linear-gradient(90deg, rgba(165,95,255,.25), rgba(165,95,255,.95))}
+.gauge .label{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:900}
+.canvasWrap{border:1px solid var(--line);border-radius:16px;background:rgba(0,0,0,.18);overflow:hidden}
+canvas{display:block}
+.feed{max-height:290px;overflow:auto;border-radius:16px;border:1px solid var(--line);background:rgba(0,0,0,.18)}
+.feed table{border-collapse:collapse;width:100%}
+.feed th,.feed td{padding:10px;border-bottom:1px solid rgba(255,255,255,.08);font-size:13px}
+.feed th{position:sticky;top:0;background:rgba(0,0,0,.32);backdrop-filter: blur(6px);text-align:left}
+.feed td.right,.feed th.right{text-align:right}
+.tag{display:inline-flex;padding:4px 8px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.04);font-weight:800}
+.tag.P{background:rgba(165,95,255,.20)}
+.tag.S{background:rgba(165,95,255,.12)}
+.tag.A{background:rgba(255,255,255,.05)}
+
+
+/* --- v6 Stats/Direction enhancements --- */
+.stat2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}
+@media (max-width: 780px){.stat2{grid-template-columns:1fr}}
+.mini{font-size:12px;opacity:.85}
+.kpi .box .row.compact{gap:8px}
+
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div class="brand">
+      <div class="row" style="justify-content:space-between">
+        <div>
+          <h1>One Shot — One‑Click Direction Trading (Guide)</h1>
+          <div class="muted">A simple UP/DOWN predictor that updates every <b>5 seconds</b>, with a live confidence meter updating every <b>1 second</b>.</div>
+        </div>
+        <div class="pill">Archived: 2025-12-31 • Mode: Demo UI</div>
+      </div>
+      <div style="margin-top:12px" class="callout">
+        <b>Plain English:</b> One Shot shows a direction (UP/DOWN). You pick <b>UP</b> or <b>DOWN</b>, choose a stake ($0–$100), and an expiry. If you guess right, you receive your stake back <i>plus</i> a fixed profit. If wrong, you lose the stake. (Payout rates depend on the venue you integrate with.)
+      </div>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div class="card">
+      <h2>1) Signal Panel (updates automatically)</h2>
+
+      <div class="bigSignal">
+        <div>
+          <div id="dir" class="dir up">UP</div>
+          <div class="sub">Locked every 5s • Live confidence updates every 1s</div>
+        </div>
+        <div style="min-width:220px">
+          <div class="sub">Live confidence</div>
+          <div class="meter" aria-label="confidence meter"><div id="confBar"></div></div>
+          <div class="row" style="justify-content:space-between; margin-top:6px">
+            <span class="tag" id="confText">62%</span>
+            <span class="tag" id="stability">Stability: MED</span>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:12px" class="split">
+        <div style="padding:12px; border-radius:16px; border:1px solid var(--line); background:rgba(255,255,255,.03)">
+          <div class="sub">Rolling Win Rate (how often the signal was correct)</div>
+          <table class="table" style="margin-top:10px">
+            <thead><tr><th>Window</th><th class="right">Win Rate</th><th class="right">n</th></tr></thead>
+            <tbody>
+              <tr><td>Last 1 minute</td><td class="right" id="wr1m">78%</td><td class="right" id="n1m">12</td></tr>
+              <tr><td>Last 5 minutes</td><td class="right" id="wr5m">81%</td><td class="right" id="n5m">60</td></tr>
+              <tr><td>Last 1 hour</td><td class="right" id="wr1h">73%</td><td class="right" id="n1h">720</td></tr>
+              <tr><td>Last 4 hours</td><td class="right" id="wr4h">69%</td><td class="right" id="n4h">2880</td></tr>
+              <tr><td>Last 12 hours</td><td class="right" id="wr12h">66%</td><td class="right" id="n12h">8640</td></tr>
+            </tbody>
+          </table>
+          <div class="foot">Tip: Trade only when short‑term + long‑term windows look healthy and the confidence meter is stable.</div>
+        </div>
+
+        <div style="padding:12px; border-radius:16px; border:1px solid var(--line); background:rgba(255,255,255,.03)">
+          <div class="sub">How scoring works (no cheating)</div>
+          <div class="foot" style="margin-top:6px">
+            Each prediction is <b>locked</b> at time <code>t</code>. After the expiry <code>H</code> (example: 60s), we compare price at <code>t+H</code> to price at <code>t</code>.
+            <br/><br/>
+            If price went up → UP prediction counts as a win. If price went down → DOWN prediction counts as a win.
+          </div>
+          <div class="row" style="margin-top:10px">
+            <button class="btn small primary" onclick="flash('This is a demo UI. In the real bot, these come from live market data + your learning engine.')">What powers the signal?</button>
+            <button class="btn small" onclick="flash('Learning Mode activates when rolling accuracy drops under target (example: 80%), then tightens confidence thresholds and recalibrates.')">Learning Mode</button>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="card">
+      <h2>2) One‑Click Trade Ticket (simple to use)</h2>
+
+      <div class="row" style="gap:10px">
+        <button id="btnUp" class="btn good" onclick="setChoice('UP')">Choose UP</button>
+        <button id="btnDown" class="btn bad" onclick="setChoice('DOWN')">Choose DOWN</button>
+        <span class="tag" id="choiceTag">Selected: UP</span>
+      </div>
+
+      <div style="margin-top:12px; padding:12px; border-radius:16px; border:1px solid var(--line); background:rgba(255,255,255,.03)">
+        <div class="sub">Stake (0–100 USD)</div>
+        <div class="row" style="margin-top:8px; align-items:center">
+          <input id="stake" type="range" min="0" max="100" step="1" value="25" oninput="updateTicket()"/>
+          <div class="tag" style="min-width:86px; text-align:center"><span id="stakeVal">$25</span></div>
+        </div>
+
+        <div class="sub" style="margin-top:10px">Expiry (how long until the bet is graded)</div>
+        <div class="row" style="margin-top:8px">
+          <button class="btn small primary" onclick="setExpiry(30)">30s</button>
+          <button class="btn small" onclick="setExpiry(60)">60s</button>
+          <button class="btn small" onclick="setExpiry(300)">5m</button>
+          <button class="btn small" onclick="setExpiry(900)">15m</button>
+          <span class="tag">Expiry: <b id="expiryLabel">30s</b></span>
+        </div>
+
+        <div class="sub" style="margin-top:10px">Payout rate (example)</div>
+        <div class="foot">This demo uses <b>+80% profit</b> if correct (you receive stake + 80% of stake). Real payout depends on the broker/exchange integration.</div>
+      </div>
+
+      <div style="margin-top:12px; padding:12px; border-radius:16px; border:1px solid var(--line); background:rgba(0,0,0,.18)">
+        <div class="kv">
+          <div class="muted">If you guess correct</div>
+          <div><b id="payoutTotal">$45.00</b> <span class="muted">(profit <span id="profitAmt">$20.00</span>)</span></div>
+        </div>
+        <div class="kv">
+          <div class="muted">If you guess wrong</div>
+          <div><b id="lossAmt">-$25.00</b> <span class="muted">(stake lost)</span></div>
+        </div>
+        <div class="kv">
+          <div class="muted">With / Against the signal</div>
+          <div class="row" style="justify-content:flex-end; margin:0">
+            <button class="btn small primary" onclick="setMode('WITH')">With</button>
+            <button class="btn small" onclick="setMode('AGAINST')">Against</button>
+            <span class="tag" id="modeTag">Mode: WITH</span>
+          </div>
+        </div>
+        <button class="btn primary" style="width:100%; margin-top:10px" onclick="flash('Demo: In production this triggers an exchange/DeFi order or logs a paper-trade. Funds should remain in your account.')">
+          Place One Shot Trade
+        </button>
+        <div class="foot">One click. You choose direction + stake + expiry. Results are graded transparently after expiry.</div>
+      </div>
+
+      <div class="foot">
+        <b>Safety note:</b> Direction trading is high risk. One Shot is a signal + scoring system, not a guarantee. Use small stake sizes and trade only when confidence and win-rate windows are healthy.
+      </div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:14px">
+    <h2>3) Quick Start (3 steps)</h2>
+    <div class="split">
+      <div class="callout">
+        <b>Step 1:</b> Watch the signal for a minute. Make sure win rates are strong and the confidence meter is stable.<br/><br/>
+        <b>Step 2:</b> Choose <b>UP</b> or <b>DOWN</b>, set your stake (0–100), and pick an expiry.
+      </div>
+      <div class="callout">
+        <b>Step 3:</b> Click <b>Place One Shot Trade</b>. After expiry, the system grades your trade and updates the win‑rate history.
+      </div>
+    </div>
+  </div>
+
+  <div class="foot">
+    <b>Disclaimers:</b> This UI is a documentation demo. Real trading requires integration with a compliant exchange/broker or DeFi execution and may require KYC/AML. This is not financial advice and does not guarantee results.
+  </div>
+</div>
+
+<script>
+/* ==========================================================
+   OneShot v7 Live GUI — production-style wiring (fixed)
+   - Prediction engine streams every 1s (independent of trades)
+   - Trade engine consumes latest prediction (paced)
+   - Lives are the ONLY stop mechanism (no streak stops)
+   - Attempt dies only when attemptBalance < $1
+   ========================================================== */
+(function(){
+  const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+  const fmt2=(n)=> (Math.round(n*100)/100).toFixed(2);
+  const tNow=()=> (new Date()).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+
+  function stakeFor(balance){
+    if(balance < 5) return 0;
+    if(balance < 20) return 1;
+    if(balance < 40) return 2;
+    if(balance < 60) return 3;
+    if(balance < 80) return 4;
+    if(balance < 250) return 5;
+    const inc = Math.floor((balance - 250) / 50);
+    return clamp(6 + inc, 1, 20);
+  }
+
+  function tradeClass(conf){
+    if(conf >= 0.78) return "P";
+    if(conf >= 0.68) return "S";
+    return "BLOCK";
+  }
+
+  function evPerTrade(W, payout, stake){
+    return W*(payout*stake) - (1-W)*stake;
+  }
+
+  const dom = {
+    status: document.getElementById('uiStatus'),
+    hearts: document.getElementById('uiHearts'),
+    heartsLabel: document.getElementById('uiHeartsLabel'),
+    attempt: document.getElementById('uiAttempt'),
+    attemptBal: document.getElementById('uiAttemptBal'),
+    stake: document.getElementById('uiStake'),
+    confFill: document.getElementById('uiConfFill'),
+    confLabel: document.getElementById('uiConfLabel'),
+    trades: document.getElementById('uiTrades'),
+    wl: document.getElementById('uiWL'),
+    wr: document.getElementById('uiWR'),
+    streak: document.getElementById('uiStreak'),
+    pnl: document.getElementById('uiPnL'),
+    ev: document.getElementById('uiEV'),
+    feed: document.getElementById('uiFeed'),
+    canvas: document.getElementById('uiChart'),
+    btnStart: document.getElementById('btnStart'),
+    btnPause: document.getElementById('btnPause'),
+    btnReset: document.getElementById('btnReset'),
+
+    upPred: document.getElementById('uiUpPred'),
+    dnPred: document.getElementById('uiDnPred'),
+    upWL: document.getElementById('uiUpWL'),
+    dnWL: document.getElementById('uiDnWL'),
+    upWR: document.getElementById('uiUpWR'),
+    dnWR: document.getElementById('uiDnWR'),
+    upLast: document.getElementById('uiUpLast'),
+    dnLast: document.getElementById('uiDnLast'),
+
+    acc50: document.getElementById('uiAcc50'),
+    avgConf50: document.getElementById('uiAvgConf50'),
+    edge50: document.getElementById('uiEdge50'),
+    pwr: document.getElementById('uiPWR'),
+    swr: document.getElementById('uiSWR'),
+    blocked: document.getElementById('uiBlocked'),
+
+    lastHeartLoss: document.getElementById('uiLastHeartLoss'),
+    lastAttemptWR: document.getElementById('uiLastAttemptWR'),
+    lastAttemptNote: document.getElementById('uiLastAttemptNote'),
+    heartsUsed: document.getElementById('uiHeartsUsed'),
+    attemptTrades: document.getElementById('uiAttemptTrades'),
+    attemptStreak: document.getElementById('uiAttemptStreak'),
+    attemptHist: document.getElementById('uiAttemptHist'),
+
+    setAuto: document.getElementById('setAuto'),
+    setBal: document.getElementById('setBal'),
+    setTPD: document.getElementById('setTPD'),
+    setW: document.getElementById('setW'),
+    setWLabel: document.getElementById('setWLabel'),
+    setP: document.getElementById('setP'),
+    setPLabel: document.getElementById('setPLabel'),
+    setSpeed: document.getElementById('setSpeed'),
+    setSpeedLabel: document.getElementById('setSpeedLabel'),
+  };
+  const ctx = dom.canvas.getContext('2d');
+
+  const state = {
+    running:false,
+    timers:[],
+
+    hearts:0,
+    heartsUsed:0,
+    attemptIndex:0,
+    attemptStart:5,
+    attemptBalance:0,
+    attemptPnL:0,
+
+    trades:0,
+    wins:0,
+    losses:0,
+    streak:0,
+
+    outcomes:[],
+    confWindow:[],
+
+    cls:{ P:{w:0,l:0}, S:{w:0,l:0}, BLOCKED:0 },
+
+    pred:{ UP:0, DOWN:0 },
+    dir:{ UP:{w:0,l:0,last:"—"}, DOWN:{w:0,l:0,last:"—"} },
+
+    attemptTrades:0,
+    attemptWins:0,
+    attemptLosses:0,
+    attemptConfSum:0,
+    attemptStreak:0,
+
+    predStream:{ t:"—", dir:"UP", conf:0.50, cls:"S" },
+
+    wrHistory:[],
+    confHistory:[],
+    heartMarks:[],
+    maxHist:160,
+
+    attemptHistory:[],
+    feed:[],
+    maxFeed:40,
+  };
+
+  function heartSVG(){
+    return `<svg viewBox="0 0 24 24" fill="none">
+      <path d="M12 21s-7-4.6-9.5-8.7C.7 9.1 2 6.2 4.8 5.2c1.7-.6 3.6-.1 5 1.2L12 8.6l2.2-2.2c1.4-1.3 3.3-1.8 5-1.2 2.8 1 4.1 3.9 2.3 7.1C19 16.4 12 21 12 21Z"
+        stroke="rgba(165,95,255,.95)" stroke-width="1.5" fill="rgba(165,95,255,.25)"/>
+    </svg>`;
+  }
+  function renderHearts(){
+    dom.hearts.innerHTML="";
+    for(let i=0;i<3;i++){
+      const on=i<state.hearts;
+      const el=document.createElement("span");
+      el.className="heart"+(on?"":" off");
+      el.innerHTML=heartSVG();
+      dom.hearts.appendChild(el);
+    }
+    dom.heartsLabel.textContent=`${state.hearts}/3`;
+  }
+
+  function rollingWR(){
+    if(!state.outcomes.length) return 0;
+    let s=0; for(const o of state.outcomes) s+=o;
+    return s/state.outcomes.length;
+  }
+  function avgConf(){
+    if(!state.confWindow.length) return 0;
+    let s=0; for(const c of state.confWindow) s+=c;
+    return s/state.confWindow.length;
+  }
+  function clsWR(c){
+    const w=state.cls[c].w, l=state.cls[c].l;
+    return (w+l)? (w/(w+l)) : 0;
+  }
+
+  function renderFeed(){
+    dom.feed.innerHTML = state.feed.map(r=>{
+      const res = r.res ? "WIN" : "LOSS";
+      const delta = r.delta>=0 ? `+${fmt2(r.delta)}` : `${fmt2(r.delta)}`;
+      return `<tr>
+        <td>${r.t}</td>
+        <td><span class="tag ${r.cls}">${r.cls}</span></td>
+        <td>${r.dir}</td>
+        <td class="right">${r.conf}%</td>
+        <td class="right">${res}</td>
+        <td class="right">${delta}</td>
+        <td class="right">${fmt2(r.bal)}</td>
+      </tr>`;
+    }).join("");
+  }
+
+  function renderAttemptHistory(){
+    dom.attemptHist.innerHTML = state.attemptHistory.map(a=>{
+      return `<tr>
+        <td>${a.t}</td>
+        <td class="right">${Math.round(a.wr*100)}%</td>
+        <td class="right">${Math.round(a.avgConf*100)}%</td>
+        <td class="right">${a.trades}</td>
+        <td class="right">${a.reason}</td>
+      </tr>`;
+    }).join("");
+  }
+
+  function gatedAuto(){
+    return dom.setAuto.checked && Number(dom.setBal.value||0) >= 15;
+  }
+
+  function setStatus(on){
+    if(on){
+      dom.status.classList.remove("off");
+      dom.status.innerHTML = `<span class="dot"></span><span><b>AUTO ON</b></span>`;
+    } else {
+      dom.status.classList.add("off");
+      dom.status.innerHTML = `<span class="dot"></span><span><b>AUTO OFF</b></span>`;
+    }
+  }
+
+  function drawChart(){
+    const W = dom.canvas.width, H = dom.canvas.height;
+    ctx.clearRect(0,0,W,H);
+
+    ctx.strokeStyle="rgba(255,255,255,0.08)";
+    ctx.lineWidth=1;
+    for(let i=0;i<=10;i++){
+      const y=24 + (H-52)*(i/10);
+      ctx.beginPath(); ctx.moveTo(46,y); ctx.lineTo(W-18,y); ctx.stroke();
+    }
+    ctx.fillStyle="rgba(255,255,255,0.65)";
+    ctx.font="12px system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial";
+    ctx.fillText("100%", 8, 30);
+    ctx.fillText("50%", 16, 24 + (H-52)*0.5 + 4);
+    ctx.fillText("0%", 24, H-18);
+
+    const minX=46, maxX=W-18, minY=24, maxY=H-28;
+
+    ctx.strokeStyle="rgba(255,255,255,0.18)";
+    ctx.setLineDash([6,6]);
+    const y72 = minY + (maxY-minY)*(1-0.72);
+    ctx.beginPath(); ctx.moveTo(minX,y72); ctx.lineTo(maxX,y72); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle="rgba(255,255,255,0.55)";
+    ctx.fillText("72% target", W-112, y72-6);
+
+    if(state.heartMarks.length){
+      ctx.strokeStyle="rgba(255,255,255,0.20)";
+      ctx.lineWidth=1;
+      for(const idx of state.heartMarks){
+        const x = minX + (maxX-minX) * (idx/(state.maxHist-1));
+        ctx.beginPath(); ctx.moveTo(x, minY); ctx.lineTo(x, maxY); ctx.stroke();
+      }
+    }
+
+    function plot(series, stroke, width){
+      if(series.length<2) return;
+      ctx.strokeStyle=stroke;
+      ctx.lineWidth=width;
+      ctx.beginPath();
+      for(let i=0;i<series.length;i++){
+        const x=minX + (maxX-minX)*(i/(state.maxHist-1));
+        const v=clamp(series[i],0,1);
+        const y=minY + (maxY-minY)*(1-v);
+        if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+      }
+      ctx.stroke();
+    }
+    plot(state.wrHistory, "rgba(165,95,255,0.95)", 2.2);
+    plot(state.confHistory, "rgba(165,95,255,0.35)", 1.6);
+  }
+
+  function render(){
+    const gate=gatedAuto();
+    setStatus(gate);
+    renderHearts();
+
+    dom.attempt.textContent = `${state.attemptIndex} / ${gate?3:0}`;
+    dom.attemptBal.textContent = `$${fmt2(state.attemptBalance)}`;
+
+    const st = stakeFor(state.attemptBalance);
+    dom.stake.textContent = `$${st}`;
+
+    dom.confFill.style.width = `${Math.round(state.predStream.conf*100)}%`;
+    dom.confLabel.textContent = `${Math.round(state.predStream.conf*100)}%`;
+
+    dom.trades.textContent = String(state.trades);
+    dom.wl.textContent = `${state.wins} / ${state.losses}`;
+    dom.wr.textContent = `${Math.round(rollingWR()*100)}%`;
+    dom.streak.textContent = String(state.streak);
+
+    dom.pnl.textContent = (state.attemptPnL>=0?"+":"") + "$" + fmt2(state.attemptPnL);
+
+    const Wv=Number(dom.setW.value), payout=Number(dom.setP.value), tpd=Number(dom.setTPD.value||0);
+    const ev = evPerTrade(Wv, payout, st) * tpd;
+    dom.ev.textContent = (ev>=0?"+":"") + "$" + fmt2(ev);
+
+    dom.upPred.textContent = String(state.pred.UP);
+    dom.dnPred.textContent = String(state.pred.DOWN);
+    const upW=state.dir.UP.w, upL=state.dir.UP.l, dnW=state.dir.DOWN.w, dnL=state.dir.DOWN.l;
+    dom.upWL.textContent = `${upW}/${upL}`;
+    dom.dnWL.textContent = `${dnW}/${dnL}`;
+    dom.upWR.textContent = `${Math.round((upW+upL)?(100*upW/(upW+upL)):0)}%`;
+    dom.dnWR.textContent = `${Math.round((dnW+dnL)?(100*dnW/(dnW+dnL)):0)}%`;
+    dom.upLast.textContent = state.dir.UP.last;
+    dom.dnLast.textContent = state.dir.DOWN.last;
+
+    dom.acc50.textContent = `${Math.round(rollingWR()*100)}%`;
+    dom.avgConf50.textContent = `${Math.round(avgConf()*100)}%`;
+    const ev50 = evPerTrade(Wv, payout, st) * Math.min(50, state.outcomes.length||0);
+    dom.edge50.textContent = (ev50>=0?"+":"") + "$" + fmt2(ev50);
+
+    dom.pwr.textContent = `${Math.round(clsWR("P")*100)}%`;
+    dom.swr.textContent = `${Math.round(clsWR("S")*100)}%`;
+    dom.blocked.textContent = String(state.cls.BLOCKED);
+
+    dom.heartsUsed.textContent = String(state.heartsUsed);
+    dom.attemptTrades.textContent = String(state.attemptTrades);
+    dom.attemptStreak.textContent = String(state.attemptStreak);
+
+    if(state.attemptHistory.length){
+      const last = state.attemptHistory[0];
+      dom.lastHeartLoss.textContent = last.t;
+      dom.lastAttemptWR.textContent = `${Math.round(last.wr*100)}%`;
+      dom.lastAttemptNote.textContent = `${last.reason} • AvgConf ${Math.round(last.avgConf*100)}% • Trades ${last.trades}`;
+    } else {
+      dom.lastHeartLoss.textContent="—";
+      dom.lastAttemptWR.textContent="—";
+      dom.lastAttemptNote.textContent="No attempt ended yet.";
+    }
+
+    drawChart();
+  }
+
+  function initDay(){
+    state.hearts = 3;
+    state.attemptIndex = 1;
+    state.attemptBalance = state.attemptStart;
+    state.attemptPnL = 0;
+
+    state.attemptTrades=0; state.attemptWins=0; state.attemptLosses=0; state.attemptConfSum=0; state.attemptStreak=0;
+
+    state.outcomes.length=0; state.confWindow.length=0;
+    state.wrHistory.length=0; state.confHistory.length=0; state.heartMarks.length=0;
+
+    state.feed.length=0;
+    renderFeed();
+  }
+
+  function startNextAttempt(){
+    state.attemptIndex += 1;
+    state.attemptBalance = state.attemptStart;
+    state.attemptPnL = 0;
+
+    state.attemptTrades=0; state.attemptWins=0; state.attemptLosses=0; state.attemptConfSum=0; state.attemptStreak=0;
+  }
+
+  function consumeHeart(reason){
+    const trades = state.attemptTrades || 0;
+    const wr = trades ? (state.attemptWins / trades) : 0;
+    const avgC = trades ? (state.attemptConfSum / trades) : 0;
+
+    state.attemptHistory.unshift({ t:tNow(), wr, avgConf:avgC, trades, reason });
+    if(state.attemptHistory.length > 3) state.attemptHistory.pop();
+    renderAttemptHistory();
+
+    state.heartMarks.push(Math.max(0, state.wrHistory.length-1));
+    if(state.heartMarks.length > 10) state.heartMarks.shift();
+
+    state.hearts = Math.max(0, state.hearts - 1);
+    state.heartsUsed += 1;
+
+    if(state.hearts <= 0){
+      stop();
+      return;
+    }
+    if(state.attemptIndex >= 3){
+      stop();
+      return;
+    }
+    startNextAttempt();
+  }
+
+  function streamPrediction(){
+    if(!state.running) return;
+    if(!gatedAuto()) return;
+
+    const W = Number(dom.setW.value);
+    const center = clamp(0.35 + W, 0.45, 0.92);
+    const noise = (Math.random()-0.5) * 0.10;
+    const conf = clamp(state.predStream.conf + noise + (center - state.predStream.conf)*0.08, 0.05, 0.98);
+
+    const dir = (Math.random() < 0.5) ? "UP" : "DOWN";
+    const cls = tradeClass(conf);
+
+    state.predStream = { t:tNow(), dir, conf, cls };
+
+    // prediction counts update live
+    state.pred[dir] += 1;
+
+    render();
+  }
+
+  function executeTrade(){
+    if(!state.running) return;
+    if(!gatedAuto()) return;
+
+    const cap = clamp(Number(dom.setTPD.value||0), 1, 420);
+    if(state.trades >= cap){
+      return; // keep prediction streaming
+    }
+
+    if(state.attemptBalance < 1){
+      consumeHeart("Attempt balance fell below $1");
+      return;
+    }
+
+    const stake = stakeFor(state.attemptBalance);
+    if(stake <= 0) return;
+
+    const snap = state.predStream;
+    const cls = snap.cls;
+    const dir = snap.dir;
+    const confPct = Math.round(snap.conf*100);
+
+    if(cls === "BLOCK"){
+      state.cls.BLOCKED += 1;
+      render();
+      return;
+    }
+
+    const W = Number(dom.setW.value);
+    const payout = Number(dom.setP.value);
+    const win = Math.random() < W;
+
+    state.attemptTrades += 1;
+    state.attemptConfSum += snap.conf;
+
+    let delta=0;
+    if(win){
+      delta = payout*stake;
+      state.attemptBalance += delta;
+      state.attemptPnL += delta;
+
+      state.wins += 1;
+      state.attemptWins += 1;
+      state.streak = state.streak >= 0 ? state.streak + 1 : 1;
+      state.attemptStreak = state.attemptStreak >= 0 ? state.attemptStreak + 1 : 1;
+
+      state.outcomes.push(1);
+      state.cls[cls].w += 1;
+      state.dir[dir].w += 1;
+      state.dir[dir].last = `${tNow()} • ${cls} • ${confPct}% • WIN`;
+    } else {
+      delta = -stake;
+      state.attemptBalance += delta;
+      state.attemptPnL += delta;
+
+      state.losses += 1;
+      state.attemptLosses += 1;
+      state.streak = state.streak <= 0 ? state.streak - 1 : -1;
+      state.attemptStreak = state.attemptStreak <= 0 ? state.attemptStreak - 1 : -1;
+
+      state.outcomes.push(0);
+      state.cls[cls].l += 1;
+      state.dir[dir].l += 1;
+      state.dir[dir].last = `${tNow()} • ${cls} • ${confPct}% • LOSS`;
+    }
+    state.trades += 1;
+
+    state.confWindow.push(snap.conf);
+    if(state.outcomes.length > 50) state.outcomes.shift();
+    if(state.confWindow.length > 50) state.confWindow.shift();
+
+    state.wrHistory.push(rollingWR());
+    state.confHistory.push(clamp(snap.conf,0,1));
+    if(state.wrHistory.length > state.maxHist) state.wrHistory.shift();
+    if(state.confHistory.length > state.maxHist) state.confHistory.shift();
+
+    state.feed.unshift({ t:tNow(), cls, dir, conf:confPct, res:win, delta, bal:state.attemptBalance });
+    if(state.feed.length > state.maxFeed) state.feed.pop();
+
+    renderFeed();
+    render();
+
+    if(state.attemptBalance < 1){
+      consumeHeart("Attempt balance fell below $1");
+    }
+  }
+
+  function clearTimers(){ state.timers.forEach(t=>clearInterval(t)); state.timers=[]; }
+
+  function start(){
+    if(state.running) return;
+    if(!gatedAuto()){ render(); return; }
+
+    initDay();
+    state.running = true;
+
+    state.timers.push(setInterval(streamPrediction, 1000));
+    state.timers.push(setInterval(renderFeed, 5000));
+
+    let acc=0;
+    state.timers.push(setInterval(()=>{
+      const cap = clamp(Number(dom.setTPD.value||0), 1, 420);
+      const speed = Number(dom.setSpeed.value);
+      const desired = clamp(2600 / (cap/120) / speed, 220, 4200);
+      acc += 100;
+      if(acc >= desired){
+        acc = 0;
+        executeTrade();
+      }
+    }, 100));
+
+    render();
+  }
+
+  function stop(){
+    state.running=false;
+    clearTimers();
+    render();
+  }
+
+  function reset(){
+    stop();
+    state.hearts=0; state.heartsUsed=0;
+    state.attemptIndex=0; state.attemptBalance=0; state.attemptPnL=0;
+    state.trades=0; state.wins=0; state.losses=0; state.streak=0;
+
+    state.outcomes.length=0; state.confWindow.length=0;
+    state.cls.P.w=state.cls.P.l=0; state.cls.S.w=state.cls.S.l=0; state.cls.BLOCKED=0;
+
+    state.pred.UP=state.pred.DOWN=0;
+    state.dir.UP.w=state.dir.UP.l=0; state.dir.UP.last="—";
+    state.dir.DOWN.w=state.dir.DOWN.l=0; state.dir.DOWN.last="—";
+
+    state.attemptTrades=0; state.attemptWins=0; state.attemptLosses=0; state.attemptConfSum=0; state.attemptStreak=0;
+
+    state.predStream={ t:"—", dir:"UP", conf:0.50, cls:"S" };
+
+    state.wrHistory.length=0; state.confHistory.length=0; state.heartMarks.length=0;
+    state.attemptHistory.length=0;
+    state.feed.length=0;
+
+    renderFeed();
+    renderAttemptHistory();
+    render();
+  }
+
+  function syncLabels(){
+    dom.setWLabel.textContent = Number(dom.setW.value).toFixed(2);
+    dom.setPLabel.textContent = Number(dom.setP.value).toFixed(2);
+    dom.setSpeedLabel.textContent = Number(dom.setSpeed.value).toFixed(2) + "×";
+    render();
+  }
+
+  dom.setW.addEventListener('input', syncLabels);
+  dom.setP.addEventListener('input', syncLabels);
+  dom.setSpeed.addEventListener('input', syncLabels);
+  dom.setTPD.addEventListener('input', render);
+  dom.setBal.addEventListener('input', render);
+  dom.setAuto.addEventListener('change', render);
+
+  dom.btnStart.addEventListener('click', start);
+  dom.btnPause.addEventListener('click', stop);
+  dom.btnReset.addEventListener('click', reset);
+
+  syncLabels();
+  reset();
+})();
+</script>
+
+<div class="card" style="margin-top:14px">
+  <h2>OneShot Auto Rules (Locked)</h2>
+  <div class="callout">
+    <b>Auto enable:</b> requires detected balance <code>≥ $15</code>.<br/>
+    <b>Daily lives:</b> <b>3 hearts</b> (3 sequential <code>$5</code> attempts). No parallel attempts.<br/>
+    <b>Early growth:</b> only <b>P</b> + <b>S</b> trades (A-class disabled).<br/>
+    <b>Stake ladder:</b> automatic scaling from <code>$1</code> to <code>$20</code> with your balance bands.
+  </div>
+  <div class="split" style="margin-top:12px">
+    <div style="padding:12px; border-radius:16px; border:1px solid var(--line); background:rgba(255,255,255,.03)">
+      <div class="sub"><b>Stake Ladder</b></div>
+      <table class="table" style="margin-top:10px">
+        <thead><tr><th>Attempt Balance</th><th class="right">Stake</th></tr></thead>
+        <tbody>
+          <tr><td>$5 – $19</td><td class="right">$1</td></tr>
+          <tr><td>$20 – $39</td><td class="right">$2</td></tr>
+          <tr><td>$40 – $59</td><td class="right">$3</td></tr>
+          <tr><td>$60 – $79</td><td class="right">$4</td></tr>
+          <tr><td>$80 – $249</td><td class="right"><b>$5</b> (hold)</td></tr>
+          <tr><td>$250 – $299</td><td class="right">$6</td></tr>
+          <tr><td>Then +$50 balance</td><td class="right">+ $1 stake (cap $20)</td></tr>
+        </tbody>
+      </table>
+      <div class="foot"><b>Rule:</b> stake follows the attempt balance; if balance drops a band, stake drops too.</div>
+    </div>
+
+    <div style="padding:12px; border-radius:16px; border:1px solid var(--line); background:rgba(255,255,255,.03)">
+      <div class="sub"><b>Profit Expectancy (math-only)</b></div>
+      <div class="foot" style="margin-top:6px">
+        With payout <code>+80%</code> on a win:<br/>
+        <code>EV = W*(0.8*stake) - (1-W)*stake = (1.8W - 1)*stake</code><br/>
+        Break-even win rate: <b>55.56%</b>.
+      </div>
+      <div class="foot" style="margin-top:10px">
+        <b>Daily safety cap:</b> worst-case loss is <b>$15</b> (3 failed $5 attempts).
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="card" style="margin-top:14px" id="live-gui">
+  <h2>Live Deployment Simple GUI (Exactly how users will experience Auto)</h2>
+  <div class="callout">
+    This section is a <b>production-style UI mock</b> that behaves like the live app:
+    <b>confidence refreshes every 1s</b>, <b>prediction feed refreshes every 5s</b>, and the <b>rolling win-rate graph</b>
+    updates live. It uses a <b>Demo Data Adapter</b> by default, but the code is structured so you can swap to a real
+    WebSocket/REST adapter without redesigning the UI.
+  </div>
+
+  <div class="gui-grid" style="margin-top:12px">
+    <!-- LEFT: Status + Graph + Feed -->
+    <div style="padding:12px; border-radius:18px; border:1px solid var(--line); background:rgba(255,255,255,.03)">
+      <div class="row" style="justify-content:space-between">
+        <div class="row">
+          <span id="uiStatus" class="badge off"><span class="dot"></span><span><b>AUTO OFF</b></span></span>
+          <span class="badge"><span class="dot"></span><span><b>P/S ONLY</b></span></span>
+          <span class="pill">1s confidence</span>
+          <span class="pill">5s feed</span>
+        </div>
+
+        <div class="row">
+          <button class="btn2" id="btnStart">Start</button>
+          <button class="btn3" id="btnPause">Pause</button>
+          <button class="btn3" id="btnReset">Reset</button>
+        </div>
+      </div>
+
+      <div class="kpi">
+        <div class="box">
+          <div class="sub">Daily Lives</div>
+          <div class="row" style="margin-top:8px; justify-content:space-between">
+            <div class="hearts" id="uiHearts"></div>
+            <span class="pill" id="uiHeartsLabel">0/3</span>
+          </div>
+          <div class="small" style="margin-top:8px">
+            Auto requires <b>≥ $15</b>. Hearts reset daily when Auto enabled + balance ≥ $15.
+          </div>
+        </div>
+
+        <div class="box">
+          <div class="sub">Attempt</div>
+          <div class="row" style="margin-top:8px; justify-content:space-between">
+            <span class="pill" id="uiAttempt">0 / 0</span>
+            <span class="pill" id="uiAttemptBal">$0.00</span>
+            <span class="pill" id="uiStake">$0</span>
+          </div>
+          <div class="small" style="margin-top:8px">
+            Stake ladder: $5–19=$1, $20–39=$2, $40–59=$3, $60–79=$4, $80–249=$5,
+            $250–299=$6, then +$1 per +$50 (cap $20).
+          </div>
+        </div>
+
+        <div class="box">
+          <div class="sub">Confidence</div>
+          <div class="gauge" style="margin-top:8px">
+            <div class="fill" id="uiConfFill"></div>
+            <div class="label" id="uiConfLabel">50%</div>
+          </div>
+          <div class="small" style="margin-top:8px">
+            If rolling WR ≥ <b>72%</b>, do <b>not</b> restrict trading (still respects hearts + attempt death rules).
+          </div>
+        </div>
+      </div>
+
+      
+      <div class="kpi" style="margin-top:12px">
+        <div class="box">
+          <div class="sub">Direction Stats (UP vs DOWN)</div>
+          <div class="mini">Tracks both <b>predictions</b> and <b>results</b> while running (live).</div>
+          <div class="stat2">
+            <div>
+              <div class="row compact" style="justify-content:space-between; margin-top:8px">
+                <span class="pill">UP Pred: <b id="uiUpPred">0</b></span>
+                <span class="pill">UP W/L: <b id="uiUpWL">0/0</b></span>
+                <span class="pill">UP WR: <b id="uiUpWR">0%</b></span>
+              </div>
+              <div class="small" style="margin-top:8px">Last UP: <b id="uiUpLast">—</b></div>
+            </div>
+            <div>
+              <div class="row compact" style="justify-content:space-between; margin-top:8px">
+                <span class="pill">DOWN Pred: <b id="uiDnPred">0</b></span>
+                <span class="pill">DOWN W/L: <b id="uiDnWL">0/0</b></span>
+                <span class="pill">DOWN WR: <b id="uiDnWR">0%</b></span>
+              </div>
+              <div class="small" style="margin-top:8px">Last DOWN: <b id="uiDnLast">—</b></div>
+            </div>
+          </div>
+          <div class="small" style="margin-top:10px">
+            If one side underperforms, you can raise the P/S confidence thresholds <b>for that direction only</b> (live governor).
+          </div>
+        </div>
+
+        <div class="box">
+          <div class="sub">Prediction Accuracy (Live)</div>
+          <div class="row" style="margin-top:8px; justify-content:space-between">
+            <span class="pill">Accuracy (50): <b id="uiAcc50">0%</b></span>
+            <span class="pill">Avg Conf (50): <b id="uiAvgConf50">0%</b></span>
+            <span class="pill">Edge(50): <b id="uiEdge50">$0.00</b></span>
+          </div>
+          <div class="small" style="margin-top:10px">
+            Edge is <b>math-only</b>: EV/trade × trades in window. This is the “is Auto worth running right now?” meter.
+          </div>
+          <div class="row" style="margin-top:10px; justify-content:space-between">
+            <span class="pill">P WR: <b id="uiPWR">0%</b></span>
+            <span class="pill">S WR: <b id="uiSWR">0%</b></span>
+            <span class="pill">Blocked(A): <b id="uiBlocked">0</b></span>
+          </div>
+        </div>
+
+        <div class="box">
+          <div class="sub">Lives — What happened last?</div>
+          <div class="row" style="margin-top:8px; justify-content:space-between">
+            <span class="pill">Last heart loss: <b id="uiLastHeartLoss">—</b></span>
+            <span class="pill">Attempt WR: <b id="uiLastAttemptWR">—</b></span>
+          </div>
+          <div class="small" style="margin-top:8px" id="uiLastAttemptNote">No attempt ended yet.</div>
+          <div class="row" style="margin-top:10px; justify-content:space-between">
+            <span class="pill">Hearts used: <b id="uiHeartsUsed">0</b></span>
+            <span class="pill">Attempt trades: <b id="uiAttemptTrades">0</b></span>
+            <span class="pill">Attempt streak: <b id="uiAttemptStreak">0</b></span>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:12px; padding:12px; border-radius:18px; border:1px solid var(--line); background:rgba(0,0,0,.18)">
+        <div class="row" style="justify-content:space-between; align-items:flex-end">
+          <div>
+            <div class="sub">Attempt History (today)</div>
+            <div class="small">Shows why a heart was consumed and how accurate the model was right before it.</div>
+          </div>
+          <span class="pill">max 3 attempts</span>
+        </div>
+        <div class="feed" style="margin-top:10px; max-height:180px">
+          <table>
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th class="right">WR</th>
+                <th class="right">AvgConf</th>
+                <th class="right">Trades</th>
+                <th class="right">Reason</th>
+              </tr>
+            </thead>
+            <tbody id="uiAttemptHist"></tbody>
+          </table>
+        </div>
+      </div>
+
+<hr class="soft"/>
+
+      <div class="row" style="justify-content:space-between">
+        <div class="row">
+          <span class="pill">Trades: <b id="uiTrades">0</b></span>
+          <span class="pill">W/L: <b id="uiWL">0 / 0</b></span>
+          <span class="pill">Rolling WR(50): <b id="uiWR">0%</b></span>
+          <span class="pill">Streak: <b id="uiStreak">0</b></span>
+        </div>
+        <div class="row">
+          <span class="pill">Attempt PnL: <b id="uiPnL">$0.00</b></span>
+          <span class="pill">EV/day: <b id="uiEV">$0.00</b></span>
+        </div>
+      </div>
+
+      <div style="margin-top:12px">
+        <div class="sub">Rolling Win Rate Graph</div>
+        <div class="small">Live drift detection; 72% target line dashed. Graph shows WR + CONF, with vertical ticks when a heart is lost.</div>
+        <div class="canvasWrap" style="margin-top:10px">
+          <canvas id="uiChart" width="980" height="260"></canvas>
+        </div>
+      </div>
+
+      <div style="margin-top:12px">
+        <div class="sub">Prediction + Trade Feed (updates every 5s)</div>
+        <div class="small">Shows class tag, direction, confidence, and result. In live deployment this is backed by logs.</div>
+
+        <div class="feed" style="margin-top:10px">
+          <table>
+            <thead>
+              <tr>
+                <th>Time</th>
+                <th>Class</th>
+                <th>Dir</th>
+                <th class="right">Conf</th>
+                <th class="right">Result</th>
+                <th class="right">Δ</th>
+                <th class="right">Bal</th>
+              </tr>
+            </thead>
+            <tbody id="uiFeed"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: Settings / How it works -->
+    <div style="padding:12px; border-radius:18px; border:1px solid var(--line); background:rgba(255,255,255,.03)">
+      <div class="sub">User Settings (simple, safe)</div>
+      <div class="small" style="margin-top:6px">These are the only knobs users should see. Everything else is automatic.</div>
+
+      <div style="margin-top:10px" class="row">
+        <label style="min-width:140px">Auto Enabled</label>
+        <input id="setAuto" type="checkbox" checked />
+        <span class="pill">requires ≥ $15</span>
+      </div>
+
+      <div style="margin-top:10px" class="row">
+        <label style="min-width:140px">Detected Balance</label>
+        <input id="setBal" type="number" min="0" step="1" value="15" style="width:140px" />
+      </div>
+
+      <div style="margin-top:10px" class="row">
+        <label style="min-width:140px">Trades/day cap</label>
+        <input id="setTPD" type="number" min="1" max="420" step="1" value="120" style="width:140px" />
+        <span class="pill">Auto pacing</span>
+      </div>
+
+      <div style="margin-top:10px" class="row">
+        <label style="min-width:140px">Demo Win Rate</label>
+        <input id="setW" type="range" min="0.50" max="0.80" step="0.01" value="0.65" style="flex:1" />
+        <span class="pill" id="setWLabel">0.65</span>
+      </div>
+
+      <div style="margin-top:10px" class="row">
+        <label style="min-width:140px">Payout</label>
+        <input id="setP" type="range" min="0.60" max="0.95" step="0.01" value="0.80" style="flex:1" />
+        <span class="pill" id="setPLabel">0.80</span>
+      </div>
+
+      <div style="margin-top:10px" class="row">
+        <label style="min-width:140px">Sim Speed</label>
+        <input id="setSpeed" type="range" min="0.25" max="10" step="0.25" value="2" style="flex:1" />
+        <span class="pill" id="setSpeedLabel">2×</span>
+      </div>
+
+      <hr class="soft"/>
+
+      <div class="sub">How it works (Live wiring plan)</div>
+      <div class="small" style="margin-top:6px">
+        <b>Production architecture:</b> UI doesn't compute trades. It consumes a stream of events:
+        <code>STATE</code>, <code>PREDICTION</code>, <code>TRADE_RESULT</code>, <code>HEARTS</code>.
+        <br/><br/>
+        <b>Adapters:</b>
+        <ul>
+          <li><b>DemoAdapter</b> (this page): generates mock events and respects your rules</li>
+          <li><b>WsAdapter</b>: subscribe to a backend WebSocket that pushes events</li>
+          <li><b>LogReplayAdapter</b>: replay real logs for debugging + marketing demos</li>
+        </ul>
+        <b>Refresh loops:</b> confidence UI at 1s, feed refresh at 5s. In live mode, these are just render timers; the data arrives event-driven.
+      </div>
+
+      <div style="margin-top:12px; padding:12px; border-radius:16px; border:1px solid var(--line); background:rgba(0,0,0,.18)">
+        <div class="sub">Key Safety Guarantees</div>
+        <div class="small" style="margin-top:6px">
+          • Worst-case daily loss cap = <b>$15</b> (3 failed $5 attempts).<br/>
+          • Attempts are <b>sequential</b> (no parallel “rotations”).<br/>
+          • Early growth uses <b>P/S only</b> to reduce wipe probability.<br/>
+          • Stake ladder is automatic and bounded: <b>$1–$20</b>.
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+/* ==========================================================
+   OneShot v7 Docs GUI — "Live deployment style"
+   - 1s: confidence refresh (render)
+   - 5s: feed refresh (render)
+   - events: in live deployment, come from backend WS
+   ========================================================== */
+(function(){
+  const clamp=(v,a,b)=>Math.max(a,Math.min(b,v));
+  const fmt2=(n)=> (Math.round(n*100)/100).toFixed(2);
+  const tNow=()=> (new Date()).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'});
+
+  // ------- Locked stake ladder -------
+  function stakeFor(balance){
+    if(balance < 5) return 0;
+    if(balance < 20) return 1;
+    if(balance < 40) return 2;
+    if(balance < 60) return 3;
+    if(balance < 80) return 4;
+    if(balance < 250) return 5;
+    const inc = Math.floor((balance - 250) / 50);
+    return clamp(6 + inc, 1, 20);
+  }
+
+  // ------- P/S gating (demo thresholds) -------
+  function tradeClass(conf){
+    if(conf >= 0.78) return "P";
+    if(conf >= 0.68) return "S";
+    return "BLOCK"; // A disabled in early phase
+  }
+
+  // ------- EV math (display only) -------
+  function evPerTrade(W, payout, stake){
+    return W*(payout*stake) - (1-W)*stake;
+  }
+
+  // ------- DOM -------
+  const dom = {
+    status: document.getElementById('uiStatus'),
+    hearts: document.getElementById('uiHearts'),
+    heartsLabel: document.getElementById('uiHeartsLabel'),
+    attempt: document.getElementById('uiAttempt'),
+    attemptBal: document.getElementById('uiAttemptBal'),
+    stake: document.getElementById('uiStake'),
+    confFill: document.getElementById('uiConfFill'),
+    confLabel: document.getElementById('uiConfLabel'),
+    trades: document.getElementById('uiTrades'),
+    wl: document.getElementById('uiWL'),
+    wr: document.getElementById('uiWR'),
+    streak: document.getElementById('uiStreak'),
+    pnl: document.getElementById('uiPnL'),
+    ev: document.getElementById('uiEV'),
+    feed: document.getElementById('uiFeed'),
+    canvas: document.getElementById('uiChart'),
+    btnStart: document.getElementById('btnStart'),
+    btnPause: document.getElementById('btnPause'),
+    btnReset: document.getElementById('btnReset'),
+
+    setAuto: document.getElementById('setAuto'),
+    setBal: document.getElementById('setBal'),
+    setTPD: document.getElementById('setTPD'),
+    setW: document.getElementById('setW'),
+    setWLabel: document.getElementById('setWLabel'),
+    setP: document.getElementById('setP'),
+    setPLabel: document.getElementById('setPLabel'),
+    setSpeed: document.getElementById('setSpeed'),
+    setSpeedLabel: document.getElementById('setSpeedLabel'),
+  };
+  const ctx = dom.canvas.getContext('2d');
+
+  // ------- State -------
+  const state = {
+    running: false,
+    timers: [],
+    conf: 0.50,
+
+    hearts: 0,
+    attemptIndex: 0,
+    attemptBalance: 0,
+    attemptStart: 5,
+    attemptPnL: 0,
+
+    trades: 0,
+    wins: 0,
+    losses: 0,
+    streak: 0,
+
+    outcomes: [], // rolling window for WR(50)
+    wrHistory: [],
+    feed: [], // last N feed rows
+    maxFeed: 40,
+    maxHist: 160,
+  };
+
+  // ------- Render helpers -------
+  function heartSVG(){
+    return `<svg viewBox="0 0 24 24" fill="none">
+      <path d="M12 21s-7-4.6-9.5-8.7C.7 9.1 2 6.2 4.8 5.2c1.7-.6 3.6-.1 5 1.2L12 8.6l2.2-2.2c1.4-1.3 3.3-1.8 5-1.2 2.8 1 4.1 3.9 2.3 7.1C19 16.4 12 21 12 21Z"
+        stroke="rgba(165,95,255,.95)" stroke-width="1.5" fill="rgba(165,95,255,.25)"/>
+    </svg>`;
+  }
+
+  function renderHearts(){
+    dom.hearts.innerHTML = "";
+    for(let i=0;i<3;i++){
+      const on = i < state.hearts;
+      const el = document.createElement('span');
+      el.className = "heart" + (on ? "" : " off");
+      el.innerHTML = heartSVG();
+      dom.hearts.appendChild(el);
+    }
+    dom.heartsLabel.textContent = `${state.hearts}/3`;
+  }
+
+  function rollingWR(){
+    if(state.outcomes.length===0) return 0;
+    let s=0; for(const o of state.outcomes) s+=o;
+    return s/state.outcomes.length;
+  }
+
+  function drawChart(){
+    const W = dom.canvas.width, H = dom.canvas.height;
+    ctx.clearRect(0,0,W,H);
+
+    // grid
+    ctx.strokeStyle = "rgba(255,255,255,0.08)";
+    ctx.lineWidth = 1;
+    for(let i=0;i<=10;i++){
+      const y = 20 + (H-40)*(i/10);
+      ctx.beginPath(); ctx.moveTo(40,y); ctx.lineTo(W-20,y); ctx.stroke();
+    }
+
+    // labels
+    ctx.fillStyle="rgba(255,255,255,0.65)";
+    ctx.font="12px system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial";
+    ctx.fillText("100%", 6, 26);
+    ctx.fillText("50%", 12, 20 + (H-40)*0.5 + 4);
+    ctx.fillText("0%", 18, H-18);
+
+    // target 72%
+    const minX=40, maxX=W-20, minY=20, maxY=H-20;
+    ctx.strokeStyle="rgba(255,255,255,0.18)";
+    ctx.setLineDash([6,6]);
+    const y72 = minY + (maxY-minY)*(1-0.72);
+    ctx.beginPath(); ctx.moveTo(minX,y72); ctx.lineTo(maxX,y72); ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.fillStyle="rgba(255,255,255,0.55)";
+    ctx.fillText("72% target", W-112, y72-6);
+
+    // line
+    if(state.wrHistory.length < 2) return;
+    ctx.strokeStyle="rgba(165,95,255,0.92)";
+    ctx.lineWidth=2;
+    ctx.beginPath();
+    for(let i=0;i<state.wrHistory.length;i++){
+      const x = minX + (maxX-minX) * (i/(state.maxHist-1));
+      const v = clamp(state.wrHistory[i], 0, 1);
+      const y = minY + (maxY-minY) * (1-v);
+      if(i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    }
+    ctx.stroke();
+  }
+
+  function renderFeed(){
+    dom.feed.innerHTML = state.feed.map(r=>{
+      const res = r.res===null ? "…" : (r.res ? "WIN" : "LOSS");
+      const delta = r.delta>=0 ? `+${fmt2(r.delta)}` : `${fmt2(r.delta)}`;
+      return `<tr>
+        <td>${r.t}</td>
+        <td><span class="tag ${r.cls}">${r.cls}</span></td>
+        <td>${r.dir}</td>
+        <td class="right">${r.conf}%</td>
+        <td class="right">${res}</td>
+        <td class="right">${delta}</td>
+        <td class="right">${fmt2(r.bal)}</td>
+      </tr>`;
+    }).join("");
+  }
+
+  function gatedAuto(){
+    const enabled = dom.setAuto.checked;
+    const bal = Number(dom.setBal.value||0);
+    return enabled && bal >= 15;
+  }
+
+  function setStatus(on){
+    if(on){
+      dom.status.classList.remove("off");
+      dom.status.innerHTML = `<span class="dot"></span><span><b>AUTO ON</b></span>`;
+    } else {
+      dom.status.classList.add("off");
+      dom.status.innerHTML = `<span class="dot"></span><span><b>AUTO OFF</b></span>`;
+    }
+  }
+
+  function render(){
+    const gate = gatedAuto();
+    setStatus(gate);
+
+    renderHearts();
+
+    dom.attempt.textContent = `${state.attemptIndex} / ${gate?3:0}`;
+    dom.attemptBal.textContent = `$${fmt2(state.attemptBalance)}`;
+
+    const st = stakeFor(state.attemptBalance);
+    dom.stake.textContent = `$${st}`;
+
+    dom.confFill.style.width = `${Math.round(state.conf*100)}%`;
+    dom.confLabel.textContent = `${Math.round(state.conf*100)}%`;
+
+    dom.trades.textContent = String(state.trades);
+    dom.wl.textContent = `${state.wins} / ${state.losses}`;
+    dom.wr.textContent = `${Math.round(rollingWR()*100)}%`;
+    dom.streak.textContent = String(state.streak);
+
+    dom.pnl.textContent = (state.attemptPnL>=0?"+":"") + "$" + fmt2(state.attemptPnL);
+
+    const W = Number(dom.setW.value);
+    const payout = Number(dom.setP.value);
+    const tpd = Number(dom.setTPD.value||0);
+    const ev = evPerTrade(W, payout, st) * tpd;
+    dom.ev.textContent = (ev>=0?"+":"") + "$" + fmt2(ev);
+
+    drawChart();
+  }
+
+  // ------- Attempt lifecycle -------
+  function startNewAttempt(){
+    state.attemptIndex += 1;
+    state.attemptBalance = state.attemptStart;
+    state.attemptPnL = 0;
+    state.outcomes.length = 0;
+    state.wrHistory.length = 0;
+  }
+
+  function attemptDies(){
+    state.hearts = Math.max(0, state.hearts - 1);
+    if(state.hearts > 0){
+      startNewAttempt();
+    } else {
+      stop();
+    }
+  }
+
+  // ------- Demo "event generator" (swap with WS in production) -------
+  function stepConfidence(){
+    // random walk with pull toward W setting
+    const W = Number(dom.setW.value);
+    const center = clamp(0.35 + W, 0.45, 0.92);
+    const noise = (Math.random()-0.5) * 0.08;
+    state.conf = clamp(state.conf + noise + (center-state.conf)*0.06, 0.05, 0.98);
+  }
+
+  function placeTrade(){
+    if(!state.running) return;
+    if(!gatedAuto()) return;
+
+    // Initialize hearts + first attempt when run begins
+    if(state.hearts === 0){
+      state.hearts = 3;
+      state.attemptIndex = 0;
+      startNewAttempt();
+    }
+
+    // Attempt death if too low to place next trade
+    if(state.attemptBalance < 1){
+      attemptDies();
+      return;
+    }
+
+    const stake = stakeFor(state.attemptBalance);
+    if(stake <= 0) return;
+
+    const cls = tradeClass(state.conf);
+    if(cls === "BLOCK") return; // P/S only
+
+    // In live mode, direction comes from model; here it's random
+    const dir = Math.random() < 0.5 ? "UP" : "DOWN";
+    const confPct = Math.round(state.conf*100);
+
+    // Resolve outcome by configured W
+    const W = Number(dom.setW.value);
+    const payout = Number(dom.setP.value);
+    const win = Math.random() < W;
+
+    let delta = 0;
+    if(win){
+      delta = payout*stake;
+      state.attemptBalance += delta;
+      state.attemptPnL += delta;
+      state.wins += 1;
+      state.streak = state.streak >= 0 ? state.streak + 1 : 1;
+      state.outcomes.push(1);
+    } else {
+      delta = -stake;
+      state.attemptBalance += delta;
+      state.attemptPnL += delta;
+      state.losses += 1;
+      state.streak = state.streak <= 0 ? state.streak - 1 : -1;
+      state.outcomes.push(0);
+    }
+    state.trades += 1;
+
+    // rolling window last 50
+    if(state.outcomes.length > 50) state.outcomes.shift();
+
+    // history for chart
+    state.wrHistory.push(rollingWR());
+    if(state.wrHistory.length > state.maxHist) state.wrHistory.shift();
+
+    // feed row
+    state.feed.unshift({t:tNow(), cls, dir, conf:confPct, res:win, delta:delta, bal:state.attemptBalance});
+    if(state.feed.length > state.maxFeed) state.feed.pop();
+
+    // attempt death check
+    if(state.attemptBalance < 1){
+      attemptDies();
+    }
+  }
+
+  // ------- Timers (render vs event) -------
+  function clearTimers(){ state.timers.forEach(t=>clearInterval(t)); state.timers=[]; }
+
+  function start(){
+    if(state.running) return;
+    if(!gatedAuto()){ render(); return; }
+    state.running = true;
+
+    // 1s confidence refresh
+    state.timers.push(setInterval(()=>{ stepConfidence(); render(); }, 1000));
+
+    // 5s feed refresh (render only; data is event-driven)
+    state.timers.push(setInterval(()=>{ renderFeed(); }, 5000));
+
+    // trade pacing loop (compressed demo time)
+    let acc = 0;
+    state.timers.push(setInterval(()=>{
+      const tpd = clamp(Number(dom.setTPD.value||0), 1, 420);
+      const speed = Number(dom.setSpeed.value);
+      const desired = clamp(2500 / (tpd/120) / speed, 220, 4200);
+      acc += 100;
+      if(acc >= desired){
+        acc = 0;
+        placeTrade();
+        render();
+      }
+    }, 100));
+
+    render();
+  }
+
+  function stop(){
+    state.running = false;
+    clearTimers();
+    render();
+  }
+
+  function reset(){
+    stop();
+    state.conf = 0.50;
+    state.hearts = 0;
+    state.attemptIndex = 0;
+    state.attemptBalance = 0;
+    state.attemptPnL = 0;
+    state.trades = 0;
+    state.wins = 0;
+    state.losses = 0;
+    state.streak = 0;
+    state.outcomes.length = 0;
+    state.wrHistory.length = 0;
+    state.feed.length = 0;
+    renderFeed();
+    render();
+  }
+
+  // ------- settings labels -------
+  function syncLabels(){
+    dom.setWLabel.textContent = Number(dom.setW.value).toFixed(2);
+    dom.setPLabel.textContent = Number(dom.setP.value).toFixed(2);
+    dom.setSpeedLabel.textContent = Number(dom.setSpeed.value).toFixed(2) + "×";
+    render();
+  }
+
+  dom.setW.addEventListener('input', syncLabels);
+  dom.setP.addEventListener('input', syncLabels);
+  dom.setSpeed.addEventListener('input', syncLabels);
+  dom.setTPD.addEventListener('input', render);
+  dom.setBal.addEventListener('input', render);
+  dom.setAuto.addEventListener('change', render);
+
+  dom.btnStart.addEventListener('click', start);
+  dom.btnPause.addEventListener('click', stop);
+  dom.btnReset.addEventListener('click', reset);
+
+  syncLabels();
+  reset();
+})();
+</script>
+
+</body>
+</html>

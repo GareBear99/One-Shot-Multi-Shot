@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OneShot Live ML System — Hearts Tester</title>
+  <style>
+    :root {
+      --bg:#0a0a10; --card:#121225; --card2:#0f1020; --text:#eef; --muted:#b7b7d6;
+      --accent:#7c4dff; --good:#2ee59d; --warn:#ffcc66; --bad:#ff4d6d; --line:#2a2a55;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      background: radial-gradient(1000px 600px at 20% 0%, #1a1038, var(--bg));
+      color: var(--text);
+      padding: 20px;
+    }
+    .wrap { max-width: 1200px; margin: 0 auto; }
+    .card {
+      background: linear-gradient(180deg, var(--card), var(--card2));
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 12px 40px rgba(0,0,0,.35);
+      margin-bottom: 14px;
+    }
+    .card h2 { margin: 0 0 14px 0; font-size: 18px; color: #fff; }
+    .bigSignal {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      padding: 18px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: rgba(0,0,0,.18);
+      margin-bottom: 14px;
+    }
+    .dir { font-size: 38px; font-weight: 900; letter-spacing: .5px; }
+    .dir.up { color: var(--good); }
+    .dir.down { color: var(--bad); }
+    .sub { font-size: 12px; color: var(--muted); margin-top: 6px; }
+    .meter {
+      height: 14px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.04);
+      overflow: hidden;
+      margin: 8px 0;
+    }
+    .meter > div {
+      height: 100%;
+      transition: width 0.3s;
+      border-radius: 999px;
+    }
+    .meter.up > div { background: linear-gradient(90deg, rgba(46,229,157,.4), rgba(46,229,157,.95)); }
+    .meter.down > div { background: linear-gradient(90deg, rgba(255,77,109,.4), rgba(255,77,109,.95)); }
+    .hearts {
+      display: flex;
+      gap: 8px;
+      font-size: 28px;
+      margin-bottom: 14px;
+    }
+    .heart.alive { color: #ff4d6d; }
+    .heart.dead { color: #333; opacity: 0.3; }
+    .grid2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .grid3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+    }
+    .grid4 {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 14px;
+    }
+    @media (max-width: 900px) {
+      .grid2, .grid3, .grid4 { grid-template-columns: 1fr; }
+    }
+    .stat-box {
+      background: rgba(124, 77, 255, 0.08);
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid rgba(124, 77, 255, 0.25);
+    }
+    .stat-label { font-size: 11px; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: .5px; }
+    .stat-value { font-size: 26px; font-weight: 900; color: #fff; }
+    .btn {
+      cursor: pointer;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 12px 18px;
+      background: rgba(255,255,255,.03);
+      color: var(--text);
+      font-weight: 650;
+      font-size: 14px;
+      transition: all 0.2s;
+    }
+    .btn:hover { background: rgba(255,255,255,.08); }
+    .btn.primary { border-color: rgba(124,77,255,.55); background: rgba(124,77,255,.18); }
+    .btn.good { border-color: rgba(46,229,157,.55); background: rgba(46,229,157,.12); }
+    .btn.bad { border-color: rgba(255,77,109,.55); background: rgba(255,77,109,.10); }
+    .controls { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
+    .tag {
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      background: rgba(255,255,255,.03);
+    }
+    .log {
+      background: #0a0a10;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 14px;
+      max-height: 350px;
+      overflow-y: auto;
+      font-family: 'Monaco', 'Courier New', monospace;
+      font-size: 12px;
+    }
+    .log-item {
+      padding: 8px;
+      border-bottom: 1px solid rgba(42,42,85,.4);
+    }
+    .log-item:last-child { border-bottom: none; }
+    .log-item.win { background: rgba(46,229,157,.08); }
+    .log-item.loss { background: rgba(255,77,109,.08); }
+    .connected { color: var(--good); }
+    .disconnected { color: var(--bad); }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <!-- Header -->
+    <div class="card">
+      <h1 style="margin: 0 0 8px 0; font-size: 28px;">🎯 OneShot Live ML System — Hearts Tester</h1>
+      <div class="sub">Real Binance BTC/USD feed • Adaptive ML model • Paper trading validation</div>
+      <div class="controls" style="margin-top: 14px;">
+        <button class="btn primary" onclick="startSystem()">▶️ Start</button>
+        <button class="btn" onclick="stopSystem()">⏹️ Stop</button>
+        <button class="btn" onclick="saveModel()">💾 Save</button>
+        <button class="btn" onclick="loadModel()">📂 Load</button>
+        <button class="btn" onclick="resetHearts()">🔄 Reset Hearts</button>
+      </div>
+    </div>
+
+    <!-- Hearts Display -->
+    <div class="card">
+      <h2>❤️ Hearts System</h2>
+      <div class="hearts" id="hearts"></div>
+      <div class="sub" id="heartsStatus">3 hearts remaining • $15 max daily loss enforced</div>
+    </div>
+
+    <!-- Live Signal -->
+    <div class="card">
+      <h2>📡 Live Prediction Signal</h2>
+      <div class="bigSignal">
+        <div>
+          <div class="dir" id="direction">—</div>
+          <div class="sub">Updates every 1 second • Based on 10 market features</div>
+        </div>
+        <div style="min-width: 280px;">
+          <div class="sub">Live Confidence</div>
+          <div class="meter" id="meterContainer">
+            <div id="meterFill" style="width: 0%;"></div>
+          </div>
+          <div style="display: flex; justify-content: space-between; gap: 10px; margin-top: 8px;">
+            <span class="tag" id="confTag">—%</span>
+            <span class="tag" id="tradeStatus">SKIP</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Stats Grid -->
+    <div class="grid4">
+      <div class="stat-box">
+        <div class="stat-label">Connection</div>
+        <div class="stat-value" id="connection" style="font-size: 14px;">⏳ Waiting</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">BTC Price</div>
+        <div class="stat-value" id="price" style="font-size: 20px;">—</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Total Preds</div>
+        <div class="stat-value" id="totalPredictions">0</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Paper Trades</div>
+        <div class="stat-value" id="paperTrades">0</div>
+      </div>
+    </div>
+
+    <!-- Performance Grid -->
+    <div class="grid3" style="margin-top: 14px;">
+      <div class="stat-box">
+        <div class="stat-label">Paper Win Rate</div>
+        <div class="stat-value" id="paperWR">—</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Model WR (50)</div>
+        <div class="stat-value" id="modelWR">—</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Paper P&L</div>
+        <div class="stat-value" id="paperPNL">$0.00</div>
+      </div>
+    </div>
+
+    <!-- ML Model Status -->
+    <div class="grid3" style="margin-top: 14px;">
+      <div class="stat-box">
+        <div class="stat-label">Confidence Threshold</div>
+        <div class="stat-value" id="threshold">—</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Aggression Level</div>
+        <div class="stat-value" id="aggression">—</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-label">Learning Rate</div>
+        <div class="stat-value" id="learningRate">—</div>
+      </div>
+    </div>
+
+    <!-- Activity Log -->
+    <div class="card" style="margin-top: 14px;">
+      <h2>📈 Trade Activity Log</h2>
+      <div class="log" id="activity"></div>
+    </div>
+  </div>
+
+  <!-- Load all modules -->
+  <script src="src/market_feed.js"></script>
+  <script src="src/feature_extractor.js"></script>
+  <script src="src/ml_model.js"></script>
+  <script src="src/oneshot_live.js"></script>
+
+  <script>
+    // Initialize system
+    let system = null;
+    let hearts = 3;
+    let dailyLoss = 0;
+    const MAX_DAILY_LOSS = 15;
+    
+    function init() {
+      console.log('Initializing OneShot Live ML System...');
+      system = new OneShotLive('btcusdt');
+      
+      // Setup callbacks
+      system.onPrediction = (data) => {
+        updateUI();
+        updateLiveSignal(data);
+      };
+      
+      system.onTradeResolved = (trade) => {
+        const result = trade.win ? '✅ WIN' : '❌ LOSS';
+        const pnl = trade.pnl > 0 ? `+$${trade.pnl.toFixed(2)}` : `-$${Math.abs(trade.pnl).toFixed(2)}`;
+        logActivity(`${result}: ${trade.direction} @ ${(trade.confidence * 100).toFixed(0)}% | ${pnl}`, trade.win);
+        
+        // Update hearts system
+        if (!trade.win) {
+          dailyLoss += Math.abs(trade.pnl);
+          if (dailyLoss >= 5 * hearts && hearts > 0) {
+            hearts--;
+            logActivity(`❤️💔 Lost a heart! ${hearts} remaining`, false);
+          }
+        }
+        
+        updateHearts();
+        updateUI();
+      };
+      
+      system.onStatusUpdate = (update) => {
+        updateUI();
+      };
+      
+      // Update UI frequently for live signal
+      setInterval(updateUI, 500);
+      
+      // Initial hearts render
+      updateHearts();
+    }
+    
+    function startSystem() {
+      if (!system) init();
+      system.start();
+      console.log('System started');
+    }
+    
+    function stopSystem() {
+      if (system) {
+        system.stop();
+        console.log('System stopped');
+      }
+    }
+    
+    function saveModel() {
+      if (system) {
+        system.saveModel();
+        alert('Model saved to localStorage!');
+      }
+    }
+    
+    function loadModel() {
+      if (system) {
+        const loaded = system.loadModel();
+        if (loaded) {
+          alert('Model loaded from localStorage!');
+          updateUI();
+        } else {
+          alert('No saved model found');
+        }
+      }
+    }
+    
+    function updateHearts() {
+      const heartsEl = document.getElementById('hearts');
+      heartsEl.innerHTML = '';
+      for (let i = 0; i < 3; i++) {
+        const heart = document.createElement('div');
+        heart.className = i < hearts ? 'heart alive' : 'heart dead';
+        heart.textContent = '❤️';
+        heartsEl.appendChild(heart);
+      }
+      
+      const status = document.getElementById('heartsStatus');
+      status.textContent = `${hearts} heart${hearts !== 1 ? 's' : ''} remaining • $${dailyLoss.toFixed(2)} / $${MAX_DAILY_LOSS} daily loss`;
+      
+      if (hearts === 0) {
+        status.textContent += ' • ⚠️ OUT OF HEARTS';
+        status.style.color = '#ff4d6d';
+      }
+    }
+    
+    function resetHearts() {
+      hearts = 3;
+      dailyLoss = 0;
+      updateHearts();
+      logActivity('🔄 Hearts reset to 3', null);
+    }
+    
+    function updateLiveSignal(data) {
+      const dirEl = document.getElementById('direction');
+      dirEl.textContent = data.direction || '—';
+      dirEl.className = 'dir ' + (data.direction === 'UP' ? 'up' : 'down');
+      
+      const meterContainer = document.getElementById('meterContainer');
+      meterContainer.className = 'meter ' + (data.direction === 'UP' ? 'up' : 'down');
+      
+      const meterFill = document.getElementById('meterFill');
+      meterFill.style.width = `${(data.confidence * 100).toFixed(0)}%`;
+      
+      const confTag = document.getElementById('confTag');
+      confTag.textContent = `${(data.confidence * 100).toFixed(0)}%`;
+      
+      const tradeStatus = document.getElementById('tradeStatus');
+      tradeStatus.textContent = data.shouldTrade ? 'TRADE' : 'SKIP';
+      tradeStatus.style.borderColor = data.shouldTrade ? 'rgba(46,229,157,.55)' : 'rgba(255,255,255,.15)';
+      tradeStatus.style.background = data.shouldTrade ? 'rgba(46,229,157,.12)' : 'rgba(255,255,255,.03)';
+    }
+    
+    function updateUI() {
+      if (!system) return;
+      
+      const stats = system.getStats();
+      
+      // Connection status
+      document.getElementById('connection').innerHTML = stats.marketConnected
+        ? '<span class="connected">✅ Live</span>'
+        : '<span class="disconnected">❌ Down</span>';
+      
+      // Price
+      document.getElementById('price').textContent = stats.currentPrice 
+        ? `$${stats.currentPrice.toLocaleString()}`
+        : '—';
+      
+      // Predictions
+      document.getElementById('totalPredictions').textContent = stats.totalPredictions || 0;
+      
+      // Paper trades
+      document.getElementById('paperTrades').textContent = 
+        `${stats.paperWins || 0}W / ${stats.paperLosses || 0}L`;
+      
+      // Paper WR
+      if (stats.paperWins + stats.paperLosses > 0) {
+        const wr = (stats.paperWR * 100).toFixed(1);
+        document.getElementById('paperWR').textContent = `${wr}%`;
+        document.getElementById('paperWR').style.color = stats.paperWR >= 0.60 ? '#2ee59d' : stats.paperWR >= 0.55 ? '#ffcc66' : '#ff4d6d';
+      }
+      
+      // Model WR
+      if (stats.modelWR50 > 0) {
+        const wr = (stats.modelWR50 * 100).toFixed(1);
+        document.getElementById('modelWR').textContent = `${wr}%`;
+        document.getElementById('modelWR').style.color = stats.modelWR50 >= 0.60 ? '#2ee59d' : stats.modelWR50 >= 0.55 ? '#ffcc66' : '#ff4d6d';
+      }
+      
+      // Paper P&L
+      const pnl = stats.paperPNL || 0;
+      document.getElementById('paperPNL').textContent = pnl >= 0 ? `+$${pnl.toFixed(2)}` : `-$${Math.abs(pnl).toFixed(2)}`;
+      document.getElementById('paperPNL').style.color = pnl >= 0 ? '#2ee59d' : '#ff4d6d';
+      
+      // Threshold
+      document.getElementById('threshold').textContent = 
+        `${(stats.confidenceThreshold * 100).toFixed(0)}%`;
+      
+      // Aggression
+      document.getElementById('aggression').textContent = 
+        `${stats.aggression.toFixed(2)}x`;
+      document.getElementById('aggression').style.color = 
+        stats.aggression > 1.5 ? '#ff4d6d' : stats.aggression > 1.2 ? '#ffcc66' : '#2ee59d';
+      
+      // Learning Rate
+      const effectiveLR = (stats.learningRate * stats.aggression * 1000).toFixed(3);
+      document.getElementById('learningRate').textContent = effectiveLR;
+    }
+    
+    const activityLog = [];
+    const maxActivityLog = 50;
+    
+    function logActivity(message, isWin = null) {
+      activityLog.unshift({
+        time: new Date().toLocaleTimeString(),
+        message,
+        isWin
+      });
+      
+      if (activityLog.length > maxActivityLog) {
+        activityLog.pop();
+      }
+      
+      renderActivity();
+    }
+    
+    function renderActivity() {
+      const container = document.getElementById('activity');
+      container.innerHTML = activityLog.map(item => {
+        const classes = ['log-item'];
+        if (item.isWin === true) classes.push('win');
+        if (item.isWin === false) classes.push('loss');
+        
+        return `<div class="${classes.join(' ')}">[${item.time}] ${item.message}</div>`;
+      }).join('');
+    }
+    
+    // Initialize on load
+    window.addEventListener('load', () => {
+      console.log('Page loaded, initializing system...');
+      init();
+      logActivity('System initialized. Press START to begin.');
+    });
+  </script>
+</body>
+</html>
