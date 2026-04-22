@@ -42,6 +42,15 @@ logging, replay, and audit across the trading fleet:
 
 ---
 
+<!-- ARC-Official-Docs-Link-Marker -->
+## 📖 Official docs
+
+[**Open the rendered official docs → https://garebear99.github.io/One-Shot-Multi-Shot/official/OneShot_Layman_Guide_v8_LiveGUI_TRUEStreaming_Fixes.html**](https://garebear99.github.io/One-Shot-Multi-Shot/official/OneShot_Layman_Guide_v8_LiveGUI_TRUEStreaming_Fixes.html)
+
+Also available under [`docs/official/`](https://github.com/GareBear99/One-Shot-Multi-Shot/tree/main/docs/official) in-tree, and through the Pages landing at [https://garebear99.github.io/One-Shot-Multi-Shot/](https://garebear99.github.io/One-Shot-Multi-Shot/).
+
+
+
 # OneShot Trading System
 
 ## 🎯 Complete Production-Ready Binary Options Trading Engine
