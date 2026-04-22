@@ -11,6 +11,14 @@ description: Binary-Options 3-Hearts Engine (JS) — part of the ARC Trading Fle
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/GareBear99/One-Shot-Multi-Shot/blob/main/LICENSE)
 [![Built on ARC-Core](https://img.shields.io/badge/built%20on-ARC--Core-5B6CFF)](https://github.com/GareBear99/ARC-Core)
 
+## 📖 Official docs
+
+[![Open the official docs](https://img.shields.io/badge/%F0%9F%93%96%20Open%20Official%20Docs-Layman%20Guide%20v8%20(Live%20GUI)-0366d6?style=for-the-badge)](./official/OneShot_Layman_Guide_v8_LiveGUI_TRUEStreaming_Fixes.html)
+
+[![Operator Guide PDF](https://img.shields.io/badge/%F0%9F%93%84%20Operator%20Guide-PDF-grey?style=for-the-badge)](./official/OneShot_Operator_Guide_Consolidated.pdf) [![Hearts %26 Stake Spec](https://img.shields.io/badge/%F0%9F%92%9A%20Hearts%20%26%20Stake%20Spec-PDF-grey?style=for-the-badge)](./official/OneShot_Auto_Hearts_Stake_Profit_Spec_v1.pdf)
+
+Live URL of the primary doc: `https://garebear99.github.io/One-Shot-Multi-Shot/official/OneShot_Layman_Guide_v8_LiveGUI_TRUEStreaming_Fixes.html`
+
 ## What this is
 
 One-Shot-Multi-Shot is part of the **ARC Trading Fleet** — six public repositories that share a
